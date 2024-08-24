@@ -17,3 +17,18 @@ FROM (
       FROM Delivery
       GROUP BY customer_id
 ) AS CTE 
+
+-- Ex 2
+SELECT  ROUND(
+          COUNT(CASE
+                WHEN day_diff = 1 THEN 1 END)/COUNT( DISTINCT player_id),2) AS fraction
+FROM (
+        SELECT player_id,
+               device_id,
+               event_date,
+               (event_date - LAG(event_date) 
+                            OVER(PARTITION BY player_id)) AS day_diff
+
+        FROM Activity
+     ) AS CTE
+
