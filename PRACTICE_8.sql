@@ -32,3 +32,11 @@ FROM (
         FROM Activity
      ) AS CTE
 
+-- Ex 3
+SELECT ID, 
+       CASE 
+           WHEN ID % 2 = 0 THEN LAG(STUDENT) OVER(ORDER BY ID)
+           ELSE COALESCE(LEAD(STUDENT) OVER(ORDER BY ID), STUDENT)
+       END AS STUDENT
+FROM SEAT
+
