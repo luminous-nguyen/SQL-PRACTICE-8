@@ -39,7 +39,7 @@ SELECT ID,
            ELSE COALESCE(LEAD(STUDENT) OVER(ORDER BY ID), STUDENT)
        END AS STUDENT
 FROM SEAT
--- Ex 4
+
 --Ex 4
 
 SELECT visited_on,
@@ -64,4 +64,32 @@ FROM (
              GROUP BY visited_on
            ) AS CTE
      ) AS CTE2
-WHERE visited_on >= '2019-01-07'
+WHERE visited_on >= (
+                      SELECT DATE_ADD(MIN(visited_on), INTERVAL 6 DAY)
+                      FROM customer
+                    )
+
+--Ex 5
+
+SELECT ROUND(SUM(tiv_2016),2) AS tiv_2016
+FROM Insurance 
+WHERE tiv_2015 =
+                ( 
+                  SELECT tiv_2015
+                  FROM Insurance 
+                  GROUP BY tiv_2015
+                  HAVING COUNT(*) > 1 
+                )
+AND pid IN 
+          (
+           SELECT  pid
+           FROM Insurance 
+           GROUP BY lat, lon
+           HAVING COUNT(*) = 1
+          )
+
+
+
+
+
+
