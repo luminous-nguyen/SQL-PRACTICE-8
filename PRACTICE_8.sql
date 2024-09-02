@@ -87,7 +87,60 @@ AND pid IN
            GROUP BY lat, lon
            HAVING COUNT(*) = 1
           )
+-- Ex 6
+SELECT Department,
+       Employee,
+       Salary
+FROM (
+        SELECT   
+               D.Name as Department,
+               E.name as Employee,
+               E.salary,
+               DENSE_RANK() OVER(PARTITION BY E.departmentId ORDER BY E.salary DESC ) AS RANK_SALARY
+        FROM Employee as E
+        JOIN Department AS D
+        ON E.departmentId = D.id
+     ) AS CTE
+WHERE RANK_SALARY <= 3
 
+--Ex 7
+SELECT
+      person_name
+FROM 
+      (
+        SELECT 
+              person_name,
+              weight,
+              SUM(weight) OVER(ORDER BY turn ) as cumsum
+       FROM Queue
+      ) AS CTE
+WHERE cumsum <= 1000
+ORDER BY cumsum DESC
+LIMIT 1
+
+--Ex 8
+      
+WITH CTE AS (
+SELECT *,
+       DENSE_RANK() 
+            OVER(
+                PARTITION by product_id ORDER BY change_date DESC
+                ) As rank_date FROM products
+WHERE change_date <='2019-08-16'
+            )
+SELECT product_id,
+       new_price As price
+FROM CTE
+WHERE rank_date = 1
+
+UNION
+
+SELECT product_id, 10
+FROM products
+WHERE product_id NOT IN (
+                         SELECT product_id 
+                         FROM CTE
+                        )
 
 
 
